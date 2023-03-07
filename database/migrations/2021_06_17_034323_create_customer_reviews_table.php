@@ -1,0 +1,38 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateCustomerReviewsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('customer_reviews', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->text('message');
+            $table->string('image')->nullable();
+            $table->unsignedBigInteger('tour_id');
+            $table->foreign('tour_id')->references('id')->on('tours')->onDelete('cascade');
+            $table->unsignedBigInteger('customer_id');
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('customer_reviews');
+    }
+}

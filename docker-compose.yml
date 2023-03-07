@@ -1,0 +1,80 @@
+version: '3'
+services:
+
+  #PHP Service
+  luxury:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: digitalocean.com/php
+    container_name: luxury
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: luxury
+      SERVICE_TAGS: dev
+    working_dir: /var/www/luxury
+    volumes:
+      - ./:/var/www/luxury
+      - ./Dockerfiles/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+
+  #Nginx Service
+  webserver:
+    image: nginx:alpine
+    container_name: nginx_luxury_webserver
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "${DOCKER_PORT_NGINX_WEB_SERVER}:80"
+      - "${DOCKER_PORT_NGINX_WEB_SERVER_SSL}:443"
+    volumes:
+      - ./:/var/www/luxury
+      - ./Dockerfiles/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - app-network
+
+  #MySQL Service
+  mysql:
+    image: mysql:5.7.32
+    container_name: ${DOCKER_MYSQL_CONTAINER_NAME}
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "${DOCKER_MYSQL_PORT}:3306"
+    environment:
+      MYSQL_DATABASE: ${DOCKER_MYSQL_DB}
+      MYSQL_ROOT_PASSWORD: ${DOCKER_MYSQL_PASSWORD}
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - dbdata:/var/lib/mysql
+      - ./Dockerfiles/mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - app-network
+
+#phpmyadmin
+#  phpmyadmin:
+#      image: phpmyadmin:5.1.0-apache
+#      container_name: ${DOCKER_PHPMYADMIN_CONTAINER_NAME}
+#      restart: unless-stopped
+#      ports:
+#          - ${DOCKER_PHPMYADMIN_PORT}:80
+#      environment:
+#          PMA_HOST: db_luxury
+#          PMA_PORT: 3306
+#          PMA_USER: ${DOCKER_PHPMYADMIN_USER}
+#          PMA_PASSWORD: ${DOCKER_PHPMYADMIN_PASSWORD}
+#      networks:
+#          - app-network
+
+#Docker Networks
+networks:
+  app-network:
+    driver: bridge
+
+#Volumes
+volumes:
+  dbdata:
+    driver: local

@@ -1,0 +1,24 @@
+.col-sm-4{
+    margin-bottom: 30px;
+    border: 1px solid lightblue;
+    border-radius: 15px 15px;
+    padding-top: 20px;
+    padding-bottom: 50px;
+    position: relative;
+}
+.btn-info{
+    position: absolute;
+    bottom: 15px;
+    left: 80px;
+}
+.col-sm-4>b{
+    color: red;
+    font-size: 18px;
+    padding-left: 80px;
+}
+.list-group{
+    margin-top: 20px;
+}
+.text-center>p{
+    margin-bottom: 30px;
+}
